@@ -1,0 +1,82 @@
+<div _ngcontent-fqc-c60="">
+  <svg #svg _ngcontent-fqc-c60="" class="svg img-fluid" viewBox="-100 -100 2040 600"
+    (dblclick)="doubleClickedSvg($event)">
+    <g _ngcontent-fqc-c60="" app-svg-axis="" _nghost-fqc-c55="">
+      <g _ngcontent-fqc-c55="">
+        <g _ngcontent-fqc-c60="" app-svg-axis="" _nghost-fqc-c55="">
+          <g _ngcontent-fqc-c55="">
+            <line _ngcontent-fqc-c55="" class="axis" x1="15" y1="0" x2="15" y2="425" style="stroke-width: 4"></line>
+            <line _ngcontent-fqc-c55="" class="axis" x1="5" y1="405" x2="1460" y2="405" style="stroke-width: 4"></line>
+            <text _ngcontent-fqc-c55="" class="axis-label label-horizontal" x="-5" y="447">
+              Intensity
+            </text>
+            <text _ngcontent-fqc-c55="" class="axis-label label-vertical" x="-35" y="412">
+              Time
+            </text>
+
+            <ng-container *ngFor="let tick of yLableData; let i = index">
+              <g _ngcontent-fqc-c55="">
+                <line _ngcontent-fqc-c55="" class="axis-tick" [attr.x1]="15" [attr.y1]="tick.y" [attr.x2]="5"
+                  [attr.y2]="tick.y" style="stroke-width: 4"></line>
+                <text _ngcontent-fqc-c55="" class="axis-tick-label label-vertical" [attr.x]="-26"
+                  [attr.y]="tick.labelY">
+                  {{ tick.label }}
+                </text>
+              </g>
+            </ng-container>
+          </g>
+        </g>
+        <ng-container *ngFor="let tick of xLableData; let i = index">
+          <g _ngcontent-fqc-c55="">
+            <line _ngcontent-fqc-c55="" class="axis-tick" [attr.x1]="tick.x" [attr.y1]="405" [attr.x2]="tick.x"
+              [attr.y2]="420" style="stroke-width: 4"></line>
+            <text _ngcontent-fqc-c55="" class="axis-tick-label label-horizontal" [attr.x]="tick.labelX - 30"
+              [attr.y]="440">
+              {{ tick.label }}
+            </text>
+          </g>
+        </ng-container>
+        <g _ngcontent-fqc-c55="">
+          <ng-container *ngFor="let line of gridLinesX">
+            <line class="grid-line" [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2"
+              style="stroke-width: 1.33333"></line>
+          </ng-container>
+          <ng-container *ngFor="let line of gridLinesY">
+            <line class="grid-line" [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2"
+              style="stroke-width: 1.33333"></line>
+          </ng-container>
+        </g>
+        <ng-container *ngFor="let anchorPoint of createAnchorPoint; let i = index">
+          <g _ngcontent-nxu-c57="" class="slider">
+            <path _ngcontent-nxu-c57="" class="slider-track" d="M 345 0 v 400"></path>
+            <path _ngcontent-nxu-c57="" class="slider-track" d="M 0 192 h 345"></path>
+            <circle _ngcontent-nxu-c57="" fill="url(#slider-thumb-gradient)" class="slider-thumb-background" r="30"
+              [attr.cx]="anchorPoint.t.clientX" [attr.cy]="anchorPoint.t.clientY"></circle>
+            <circle _ngcontent-nxu-c57="" class="slider-thumb" fill="#3C87FF" r="15"
+              [attr.cx]="anchorPoint.t.clientX+210" [attr.cy]="anchorPoint.t.clientY"></circle>
+            <rect _ngcontent-nxu-c57="" rx="5" ry="5" class="slider-label-backdrop" width="90"
+              [attr.y]="anchorPoint.t.clientY" x="365"></rect>
+            <text _ngcontent-nxu-c57="" class="slider-label" [attr.y]="anchorPoint.t.clientY + 10"
+              [attr.x]="anchorPoint.t.clientX">{{anchorPoint.Intensity}}</text>
+            <rect _ngcontent-nxu-c57="" rx="5" ry="5" class="slider-label-backdrop" width="150"
+              [attr.y]="anchorPoint.t.clientY + 225" x="270"></rect>
+            <text _ngcontent-nxu-c57="" class="slider-label" [attr.y]="anchorPoint.t.clientY"
+              [attr.x]="anchorPoint.t.clientX">{{anchorPoint.hour}}:{{anchorPoint.minute}}:0</text>
+          </g>
+
+          <g _ngcontent-lig-c56="" class="progress">
+            <line _ngcontent-lig-c56="" class="track" [attr.x1]="i == 0 ? 0 :createAnchorPoint[i-1].t.clientX + 210"
+              [attr.y1]=" i == 0 ? anchorPoint.t.clientY : createAnchorPoint[i-1]?.t.clientY"
+              [attr.x2]="anchorPoint.t.clientX + 210" [attr.y2]="anchorPoint.t.clientY"
+              style="stroke: rgb(60, 135, 255); stroke-width: 8;"></line>
+          </g>
+          <g _ngcontent-lig-c56="" class="progress" *ngIf="i == createAnchorPoint.length-1">
+            <line _ngcontent-lig-c56="" class="track" [attr.x1]="anchorPoint.t.clientX + 210"
+              [attr.y1]="anchorPoint.t.clientY" [attr.x2]=" width" [attr.y2]="anchorPoint.t.clientY"
+              style="stroke: rgb(60, 135, 255); stroke-width: 8;"></line>
+          </g>
+        </ng-container>
+      </g>
+    </g>
+  </svg>
+</div>

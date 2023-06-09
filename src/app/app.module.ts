@@ -3,16 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SvgchartComponent } from './svgchart/svgchart.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+  declarations: [AppComponent, SvgchartComponent],
+  imports: [BrowserModule, AppRoutingModule],
+  providers: [SvgchartComponent],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

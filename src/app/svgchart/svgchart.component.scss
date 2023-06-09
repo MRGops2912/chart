@@ -1,0 +1,53 @@
+.axis {
+    stroke: #000;
+}
+
+.axis-tick {
+  stroke: gray;
+}
+
+.grid-line {
+    stroke: gray;
+    stroke-dasharray: 8 16;
+}
+
+.linear-line {
+  stroke: blue;
+}
+
+.movable-point {
+  cursor: pointer;
+  stroke: none;
+  fill: red;
+}
+
+.slider-track {
+  display: none;
+  fill: none;
+  stroke-width: 4;
+  stroke: gray;
+}
+
+.slider-thumb {
+  cursor: pointer;
+}
+
+.slider-label {
+    display: none;
+    font-size: 30px;
+    text-anchor: middle;
+    fill: gray;
+}
+.slider-label:hover {
+  display: block;
+    font-size: 30px;
+    text-anchor: middle;
+    fill: gray;
+}
+.slider-label-backdrop{
+    display: none;
+    height: 40px;
+    fill: #fff;
+    stroke: gray;
+    stroke-width: 2;
+}
