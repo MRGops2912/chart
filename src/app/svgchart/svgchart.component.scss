@@ -51,3 +51,16 @@
     stroke: gray;
     stroke-width: 2;
 }
+
+.label-vertical {
+  text-anchor: end;
+}
+
+.label-horizontal {
+  text-anchor: middle;
+}
+
+.axis-tick-label {
+  font-size: 20px;
+  fill: gray;
+}

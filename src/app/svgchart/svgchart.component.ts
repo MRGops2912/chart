@@ -12,6 +12,21 @@ interface SelectedLightType {
   sortOrder: number;
 }
 
+interface GridLine {
+  x1: number; y1: number; x2: number; y2: number
+}
+
+interface ProgressPoint {
+  start: {
+    x: number,
+    y: number
+  },
+  end: {
+    x: number,
+    y: number
+  }
+}
+
 @Component({
   selector: 'app-svgchart',
   templateUrl: './svgchart.component.html',
@@ -22,22 +37,14 @@ export class SvgchartComponent {
 
   yLableData: { y: number; labelY: number; label: string }[] = [];
   xLableData: { x: number; labelX: number; label: string }[] = [];
-  gridLines: { x1: number; y1: number; x2: number; y2: number }[] = [];
-  gridLinesX: any[] = [];
-  gridLinesY: any[] = [];
-  lineVisible = false;
-  movablePointX = 0;
-  movablePointY = 0;
-  showValues: boolean = false;
-  xValue: number = 0;
-  yValue: number = 0;
-  selectedLightType: SelectedLightType[] = [];
+  gridLines: GridLine[] = [];
+  gridLinesX: GridLine[] = [];
+  gridLinesY: GridLine[] = [];
   width = 1440; // Width of the grid
-  height = 405; // Height of the grid
-  selectedDetail: any;
-  anchorPointContext: any;
-  updateToLast: any;
-  createAnchorPoint: any[] = [];
+  height = 400; // Height of the grid
+  padding = 100;
+  anchorPoints: any[] = [];
+  progressPoints: ProgressPoint[] = [];
 
   constructor(
     private elementRef: ElementRef,
@@ -92,45 +99,82 @@ export class SvgchartComponent {
     }
   }
 
-  doubleClickedSvg(t: any) {
-    const e = this.getSvgPoint();
-    (e.x = t.clientX), (e.y = t.clientY);
-    const n = e.matrixTransform(this.getSvgScreenCTM()),
-      r = this.numberConvertService.clamp(
-        100 * (1 - n.y / this.height),
-        0,
-        100
-      ),
-      s = this.numberConvertService.clamp(60 * n.x, 0, 60 * (this.width - 4));
-    this.createAnchorPoint.push({
-      intensity: Math.round(r),
-      hour: this.numberConvertService.getRoundedHours(s),
-      minute: this.numberConvertService.getRoundedMinutes(s),
-      t: t,
-    }),
-      (this.selectedDetail = e);
+  doubleClickedSvg(clickEvent: MouseEvent) {
+    const svgPoint = this.getSvgPoint();
+    svgPoint.x = clickEvent.clientX;
+    svgPoint.y = clickEvent.clientY;
+
+    const transformedSVGMatrix = svgPoint.matrixTransform(this.getSvgScreenCTM());
+    const clickedPointIntensity = this.numberConvertService.clamp(
+      100 * (1 - transformedSVGMatrix.y / this.height),
+      0,
+      100
+    );
+    const clickedPointTime = this.numberConvertService.clamp(60 * transformedSVGMatrix.x, 0, 60 * (this.width - 4));
+    const clickedPoint = {
+      intensity: Math.round(clickedPointIntensity),
+      hour: this.numberConvertService.getRoundedHours(clickedPointTime),
+      minute: this.numberConvertService.getRoundedMinutes(clickedPointTime),
+      second: 0,
+      clickedPointObj: clickEvent,
+    };
+    this.anchorPoints.push(clickedPoint);
+    // console.log('this.anchorPoints', this.anchorPoints);
+    this.drawPoints();
   }
 
-  onUpdateToLast() {
-    (this.anchorPointContext = {
-      position: {
-        xMax: 0,
-        yMax: 0,
-      },
-      detail: this.selectedDetail,
-      anchorPoint:
-        this.selectedDetail.anchorPoints[
-          this.selectedDetail.anchorPoints.length - 1
-        ],
-    }),
-      this.updateAnchorPointIsActive(this.anchorPointContext.anchorPoint);
+  drawPoints() {
+    const pointDimensons = this.anchorPoints.sort((a, b) => this.numberConvertService.getSeconds(a.hour, a.minute, a.second) - this.numberConvertService.getSeconds(b.hour, b.minute, b.second)).map(point => ({
+      x: this.getTimePosition(point),
+      y: this.height - point.intensity / 100 * this.height
+    }));
+    this.progressPoints = this.getLinearProgress(pointDimensons);
+    console.log('this.progressPoints', this.progressPoints);
   }
 
-  updateAnchorPointIsActive(t: any) {
-    this.selectedDetail.anchorPoints.forEach((t: any) => (t.isActive = !1)),
-      (this.selectedDetail.anchorPoints.find((e: any) => e === t).isActive =
-        !0);
+  getLinearProgress(pointDimensons: Array<{ x: number, y: number }>) {
+    const result: ProgressPoint[] = [];
+    console.log('pointDimensons', pointDimensons);
+    pointDimensons.forEach(pointDimenson => {
+      const pointDimensonIndex = pointDimensons.indexOf(pointDimenson);
+      if (pointDimensonIndex === 0) {
+        const lastPoint = pointDimensons[pointDimensons.length - 1];
+        result.push({
+          start: {
+            x: lastPoint.x - this.width,
+            // y: lastPoint.y,
+            y: pointDimenson.y
+          },
+          end: pointDimenson
+        })
+      }
+      if (pointDimensonIndex === pointDimensons.length - 1) {
+        const firstPoint = pointDimensons[0];
+        result.push({
+          start: pointDimenson,
+          end: {
+            x: this.width + firstPoint.x,
+            y: firstPoint.y
+          }
+        })
+      }
+
+      pointDimensonIndex !== pointDimensons.length - 1 && result.push({
+        start: pointDimenson,
+        end: pointDimensons[pointDimensonIndex + 1]
+      });
+    }
+    );
+    return result;
+
   }
+
+
+  getTimePosition(date: { hour: number, minute: number }) {
+    return 60 * date.hour + date.minute;
+  }
+
+
   getSvgScreenCTM() {
     const screenCTM = this.svg.nativeElement.getScreenCTM();
     return screenCTM?.inverse();
