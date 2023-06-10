@@ -41,7 +41,7 @@ export class SvgchartComponent {
   gridLinesX: GridLine[] = [];
   gridLinesY: GridLine[] = [];
   width = 1440; // Width of the grid
-  height = 400; // Height of the grid
+  height = 405; // Height of the grid
   padding = 100;
   anchorPoints: any[] = [];
   progressPoints: ProgressPoint[] = [];
@@ -153,7 +153,7 @@ export class SvgchartComponent {
         result.push({
           start: pointDimenson,
           end: {
-            x: this.width + firstPoint.x,
+            x: this.width,
             y: firstPoint.y
           }
         })

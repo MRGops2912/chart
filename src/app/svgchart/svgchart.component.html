@@ -35,10 +35,10 @@
       </g>
     </g>
     <g>
-      <svg width="1440" height="400" viewBox="0 0 1440 400">
+      <svg width="1470" height="470" viewBox="0 0 1470 470">
         <g>
           <g>
-            <ng-container *ngFor="let progressPoint of progressPoints">
+            <ng-container *ngFor="let progressPoint of progressPoints; let i=index">
               <g class="progress">
                 <circle class="corner" r="4" style="fill: rgb(60, 135, 255);" [attr.cx]="progressPoint.start.x"
                   [attr.cy]="progressPoint.start.y"></circle>
@@ -57,8 +57,10 @@
                 <g class="slider active">
                   <path class="slider-track" attr.d="M {{progressPoint.end.x}} 0 v {{height}}"></path>
                   <path class="slider-track" attr.d="M 0 {{progressPoint.end.y}} h {{progressPoint.end.x}}"></path>
+                  <ng-container *ngIf=" i !== progressPoints.length-1">
                   <circle fill="url(#slider-thumb-gradient)" class="slider-thumb-background" r="30" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y"></circle>
                   <circle class="slider-thumb" fill="#3C87FF" r="15" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y"></circle>
+                  </ng-container>
                 </g>
               </g>
             </ng-container>
