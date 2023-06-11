@@ -3,11 +3,10 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SvgchartComponent } from './svgchart/svgchart.component';
-import { SliderDirective } from './slider.directive';
+import { SvgchartComponent } from './svg-chart/svg-chart.component';
 
 @NgModule({
-  declarations: [AppComponent, SvgchartComponent, SliderDirective],
+  declarations: [AppComponent, SvgchartComponent],
   imports: [BrowserModule, AppRoutingModule],
   providers: [SvgchartComponent],
   bootstrap: [AppComponent],

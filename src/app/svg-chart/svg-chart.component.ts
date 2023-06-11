@@ -1,49 +1,27 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
-import { NumberConvertService } from '../number-convert.service';
-
-interface SelectedLightType {
-  description: string;
-  hexColor: string;
-  id: number;
-  isDangerous: boolean;
-  isSpecial: boolean;
-  isVisable: boolean;
-  name: string;
-  sortOrder: number;
-}
-
-interface GridLine {
-  x1: number; y1: number; x2: number; y2: number
-}
-
-interface ProgressPoint {
-  start: {
-    x: number,
-    y: number
-  },
-  end: {
-    x: number,
-    y: number
-  }
-}
+import { NumberConvertService } from '../core/services/number-convert.service';
+import { ClickedPoint, GridLine, LabelData, ProgressPoint, TimePosition } from '../interface/interface';
+import { GridSize, MouseButton, StepSize } from '../enum/enum';
 
 @Component({
-  selector: 'app-svgchart',
-  templateUrl: './svgchart.component.html',
-  styleUrls: ['./svgchart.component.scss'],
+  selector: 'app-svg-chart',
+  templateUrl: './svg-chart.component.html',
+  styleUrls: ['./svg-chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SvgchartComponent {
   @ViewChild('svg') svg!: ElementRef<SVGSVGElement>;
 
-  yLableData: { y: number; labelY: number; label: string }[] = [];
-  xLableData: { x: number; labelX: number; label: string }[] = [];
+  yLableData: LabelData[] = [];
+  xLableData: LabelData[] = [];
   gridLines: GridLine[] = [];
   gridLinesX: GridLine[] = [];
   gridLinesY: GridLine[] = [];
-  width = 1440; // Width of the grid
-  height = 400; // Height of the grid
-  padding = 100;
-  anchorPoints: any[] = [];
+  // Width of the gridyLableData
+  width = GridSize.Width;
+  // Height of the grid
+  height = GridSize.Height;
+  anchorPoints: ClickedPoint[] = [];
   progressPoints: ProgressPoint[] = [];
   isMoving: boolean = false;
 
@@ -66,7 +44,7 @@ export class SvgchartComponent {
   }
 
   generateXLabel(): void {
-    const yLabelValues = [
+    const yLabelValues: TimePosition[] = [
       { time: '03:00:00', position: 180 },
       { time: '06:00:00', position: 360 },
       { time: '09:00:00', position: 540 },
@@ -88,45 +66,23 @@ export class SvgchartComponent {
   }
 
   generateGridLines(): void {
-    const xStep = 180; // X-axis step size
-    const yStep = 40; // Y-axis step size
+    // X-axis step size
+    const xStep = StepSize.X;
+    // Y-axis step size
+    const yStep = StepSize.Y;
 
-    for (let x = 180; x <= this.width; x += xStep) {
+    for (let x = StepSize.X; x <= this.width; x += xStep) {
       this.gridLinesX.push({ x1: x, y1: 0, x2: x, y2: this.height });
     }
 
     for (let y = 0; y < this.height - 10; y += yStep) {
-      this.gridLinesY.push({ x1: 0, y1: y, x2: this.width, y2: y });
+      this.gridLinesY.push({ x1: -5, y1: y, x2: this.width, y2: y });
     }
   }
 
   doubleClickedSvg(clickEvent: MouseEvent): void {
-    const svgPoint = this.getSvgPoint();
-    svgPoint.x = clickEvent.clientX;
-    svgPoint.y = clickEvent.clientY;
-
-    const transformedSVGMatrix = svgPoint.matrixTransform(
-      this.getSvgScreenCTM()
-    );
-    const clickedPointIntensity = this.numberConvertService.clamp(
-      100 * (1 - transformedSVGMatrix.y / this.height),
-      0,
-      100
-    );
-    const clickedPointTime = this.numberConvertService.clamp(
-      60 * transformedSVGMatrix.x,
-      0,
-      60 * (this.width - 4)
-    );
-    const clickedPoint = {
-      intensity: Math.round(clickedPointIntensity),
-      hour: this.numberConvertService.getRoundedHours(clickedPointTime),
-      minute: this.numberConvertService.getRoundedMinutes(clickedPointTime),
-      second: 0,
-      clickedPointObj: clickEvent,
-    };
+    const clickedPoint = this.calculateClickedPoint(clickEvent);
     this.anchorPoints.push(clickedPoint);
-    // console.log('this.anchorPoints', this.anchorPoints);
     this.drawPoints();
   }
 
@@ -142,12 +98,12 @@ export class SvgchartComponent {
         y: this.height - (point.intensity / 100) * this.height,
       }));
     this.progressPoints = this.getLinearProgress(pointDimensons);
-    // console.log('this.progressPoints', this.progressPoints);
   }
 
-  getLinearProgress(pointDimensons: Array<{ x: number; y: number }>): ProgressPoint[] {
+  getLinearProgress(
+    pointDimensons: Array<{ x: number; y: number }>
+  ): ProgressPoint[] {
     const result: ProgressPoint[] = [];
-    // console.log('pointDimensons', pointDimensons);
     pointDimensons.forEach((pointDimenson) => {
       const pointDimensonIndex = pointDimensons.indexOf(pointDimenson);
       if (pointDimensonIndex === 0) {
@@ -155,7 +111,6 @@ export class SvgchartComponent {
         result.push({
           start: {
             x: lastPoint.x - this.width,
-            // y: lastPoint.y,
             y: pointDimenson.y,
           },
           end: pointDimenson,
@@ -187,64 +142,25 @@ export class SvgchartComponent {
   }
 
   mousedown(downevent: MouseEvent): void {
-    if (downevent.button === 0) {
+    if (downevent.button === MouseButton.Left) {
       this.isMoving = true;
       // Left mouse button
     }
   }
 
   mouseup(upevent: MouseEvent): void {
-    if (upevent.button === 0) {
+    if (upevent.button === MouseButton.Left) {
       this.isMoving = false;
       // Left mouse button
     }
   }
 
   onPointMove(moveEvent: MouseEvent, index: number): void {
-    // console.log('$event', moveEvent, index);
     if (this.isMoving) {
-      const svgPoint = this.getSvgPoint();
-      svgPoint.x = moveEvent.clientX;
-      svgPoint.y = moveEvent.clientY;
-
-      const transformedSVGMatrix = svgPoint.matrixTransform(
-        this.getSvgScreenCTM()
-      );
-
-      const newDimensions = {
-        x: this.numberConvertService.clamp(
-          transformedSVGMatrix.x,
-          0,
-          this.width - 4
-        ),
-        y: this.numberConvertService.clamp(
-          transformedSVGMatrix.y,
-          0,
-          this.height
-        ),
-      };
-      const clickedPointIntensity = this.numberConvertService.clamp(
-        100 * (1 - transformedSVGMatrix.y / this.height),
-        0,
-        100
-      );
-      const clickedPointTime = this.numberConvertService.clamp(
-        60 * transformedSVGMatrix.x,
-        0,
-        60 * (this.width - 4)
-      );
-      const clickedPoint = {
-        intensity: Math.round(clickedPointIntensity),
-        hour: this.numberConvertService.getRoundedHours(clickedPointTime),
-        minute: this.numberConvertService.getRoundedMinutes(clickedPointTime),
-        second: 0,
-      };
-      // console.log('clickedPoint', clickedPoint, newDimensions);
+      const clickedPoint = this.calculateClickedPoint(moveEvent);
       this.anchorPoints[index] = {
         ...clickedPoint,
       };
-      // this.anchorPoints.push(clickedPoint);
-      // console.log('this.anchorPoints', this.anchorPoints[index]);
       this.drawPoints();
     }
   }
@@ -256,5 +172,33 @@ export class SvgchartComponent {
 
   getSvgPoint(): DOMPoint {
     return this.svg.nativeElement.createSVGPoint();
+  }
+
+  calculateClickedPoint(clickEvent: MouseEvent): ClickedPoint {
+    const svgPoint = this.getSvgPoint();
+    svgPoint.x = clickEvent.clientX;
+    svgPoint.y = clickEvent.clientY;
+
+    const transformedSVGMatrix = svgPoint.matrixTransform(
+      this.getSvgScreenCTM()
+    );
+    const clickedPointIntensity = this.numberConvertService.clamp(
+      100 * (1 - transformedSVGMatrix.y / this.height),
+      0,
+      100
+    );
+    const clickedPointTime = this.numberConvertService.clamp(
+      60 * transformedSVGMatrix.x,
+      0,
+      60 * (this.width - 4)
+    );
+    const clickedPoint = {
+      intensity: Math.round(clickedPointIntensity),
+      hour: this.numberConvertService.getRoundedHours(clickedPointTime),
+      minute: this.numberConvertService.getRoundedMinutes(clickedPointTime),
+      second: 0,
+      clickedPointObj: clickEvent,
+    };
+    return clickedPoint;
   }
 }

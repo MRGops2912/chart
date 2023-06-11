@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SvgchartComponent } from './svgchart.component';
+import { SvgchartComponent } from './svg-chart.component';
 
 describe('SvgchartComponent', () => {
   let component: SvgchartComponent;

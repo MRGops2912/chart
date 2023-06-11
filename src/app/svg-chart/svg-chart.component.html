@@ -67,7 +67,7 @@
                 <ng-container *ngIf=" i !== progressPoints.length-1">
                 <circle fill="url(#slider-thumb-gradient)" class="slider-thumb-background" r="30" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y"></circle>
                 <!-- <circle class="slider-thumb" fill="#3C87FF" r="15" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y"></circle> -->
-                <circle class="slider-thumb" fill="#3C87FF" r="15" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y" appSlider (mouseup)="mouseup($event)" (mousedown)="mousedown($event)" (move)="onPointMove($event, i)"></circle>
+                <circle class="slider-thumb" fill="#3C87FF" r="15" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y" (mouseup)="mouseup($event)" (mousedown)="mousedown($event)" (mousemove)="onPointMove($event, i)"></circle>
                 </ng-container>
               </g>
             </g>
