@@ -7,14 +7,14 @@
         <text class="axis-label label-horizontal" x="-5" y="447"> Intensity </text>
         <text class="axis-label label-vertical" x="-35" y="412"> Time </text>
         <g>
-          <g *ngFor="let axisLabel of yLableData;">
+          <g *ngFor="let axisLabel of yLableData;  trackBy: trackByLabelData">
             <line class="axis-tick" [attr.x1]="-15" [attr.y1]="axisLabel.y" [attr.x2]="-5" [attr.y2]="axisLabel.y"
               style="stroke-width: 4"></line>
             <text class="axis-tick-label label-vertical" [attr.x]="-26" [attr.y]="axisLabel.labelY">
               {{ axisLabel.label }}
             </text>
           </g>
-          <g *ngFor="let xAxis of xLableData;">
+          <g *ngFor="let xAxis of xLableData;  trackBy: trackByLabelData">
             <line class="axis-tick" [attr.x1]="xAxis.x" [attr.y1]="405" [attr.x2]="xAxis.x" [attr.y2]="420"
               style="stroke-width: 4"></line>
             <text class="axis-tick-label label-horizontal" [attr.x]="xAxis.labelX" [attr.y]="440">
@@ -23,11 +23,11 @@
           </g>
         </g>
         <g>
-          <g *ngFor="let line of gridLinesY">
+          <g *ngFor="let line of gridLinesY; trackBy: trackByGridLineId">
             <line class="grid-line" [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2"
               style="stroke-width: 1.33333"></line>
           </g>
-          <g *ngFor="let line of gridLinesX">
+          <g *ngFor="let line of gridLinesX; trackBy: trackByGridLineId">
             <line class="grid-line" [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2"
               style="stroke-width: 1.33333"></line>
           </g>
@@ -38,7 +38,7 @@
       <svg width="1440" height="400" viewBox="0 0 1440 400">
         <g>
           <g>
-            <ng-container *ngFor="let progressPoint of progressPoints; let i=index">
+            <ng-container *ngFor="let progressPoint of progressPoints; let i=index; trackBy: trackByProgressPoint">
               <g class="progress">
                 <circle class="corner" r="4" style="fill: rgb(60, 135, 255);" [attr.cx]="progressPoint.start.x"
                   [attr.cy]="progressPoint.start.y"></circle>
@@ -51,7 +51,7 @@
         </g>
       </svg>
       <g>
-        <ng-container *ngFor="let progressPoint of progressPoints; let i=index">
+        <ng-container *ngFor="let progressPoint of progressPoints; let i=index; trackBy: trackByProgressPoint">
           <g>
             <g>
               <defs>

@@ -17,7 +17,7 @@ export class SvgchartComponent {
   gridLines: GridLine[] = [];
   gridLinesX: GridLine[] = [];
   gridLinesY: GridLine[] = [];
-  // Width of the gridyLableData
+  // Width of the grid
   width = GridSize.Width;
   // Height of the grid
   height = GridSize.Height;
@@ -200,5 +200,20 @@ export class SvgchartComponent {
       clickedPointObj: clickEvent,
     };
     return clickedPoint;
+  }
+
+  trackByProgressPoint(index: number, progressPoint: ProgressPoint): number {
+    // Return a unique identifier for the progressPoint item
+    return index;
+  }
+
+  trackByLabelData(index: number, labelData: LabelData): string {
+    // Return a unique identifier for the labelData item
+    return labelData.label;
+  }
+  
+  trackByGridLineId(index: number, gridLine: GridLine): string {
+    // Return a unique identifier for the gridLine item
+    return `${gridLine.x1}-${gridLine.y1}-${gridLine.x2}-${gridLine.y2}`;
   }
 }
