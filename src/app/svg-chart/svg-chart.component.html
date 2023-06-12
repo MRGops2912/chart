@@ -1,5 +1,5 @@
 <div>
-  <svg #svg class="svg img-fluid" viewBox="-100 -100 1640 600" (dblclick)="doubleClickedSvg($event)">
+  <svg #svg class="svg img-fluid" viewBox="-100 -100 1640 600" (dblclick)="handleSVGDoubleClick($event)">
     <g>
       <g>
         <line class="axis" x1="-5" y1="0" x2="-5" y2="425" style="stroke-width: 4;"></line>
@@ -65,9 +65,11 @@
                 <path class="slider-track" attr.d="M {{progressPoint.end.x}} 0 v {{height}}"></path>
                 <path class="slider-track" attr.d="M 0 {{progressPoint.end.y}} h {{progressPoint.end.x}}"></path>
                 <ng-container *ngIf=" i !== progressPoints.length-1">
-                <circle fill="url(#slider-thumb-gradient)" class="slider-thumb-background" r="30" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y"></circle>
-                <!-- <circle class="slider-thumb" fill="#3C87FF" r="15" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y"></circle> -->
-                <circle class="slider-thumb" fill="#3C87FF" r="15" [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y" (mouseup)="mouseup($event)" (mousedown)="mousedown($event)" (mousemove)="onPointMove($event, i)"></circle>
+                  <circle fill="url(#slider-thumb-gradient)" class="slider-thumb-background" r="30"
+                    [attr.cx]="progressPoint.end.x" [attr.cy]="progressPoint.end.y"></circle>
+                  <circle class="slider-thumb" fill="#3C87FF" r="15" [attr.cx]="progressPoint.end.x"
+                    [attr.cy]="progressPoint.end.y" (mouseup)="mouseup($event)" (mousedown)="mousedown($event)"
+                    (mousemove)="onPointMove($event, i)"></circle>
                 </ng-container>
               </g>
             </g>

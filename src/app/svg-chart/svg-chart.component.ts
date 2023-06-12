@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { NumberConvertService } from '../core/services/number-convert.service';
-import { ClickedPoint, GridLine, LabelData, ProgressPoint, TimePosition } from '../interface/interface';
-import { GridSize, MouseButton, StepSize } from '../enum/enum';
+import { ClickedPoint, GridLine, LabelData, ProgressPoint, TimePosition } from '../models/interfaces/chart.interfaces';
+import { MouseButton } from '../models/enums/chart.enums';
+import { GridSize, StepSize } from '../models/constants/chart.constants';
 
 @Component({
   selector: 'app-svg-chart',
@@ -26,7 +27,6 @@ export class SvgchartComponent {
   isMoving: boolean = false;
 
   constructor(
-    private elementRef: ElementRef,
     private numberConvertService: NumberConvertService
   ) {
     // Calculate the tick values and positions
@@ -80,7 +80,7 @@ export class SvgchartComponent {
     }
   }
 
-  doubleClickedSvg(clickEvent: MouseEvent): void {
+  handleSVGDoubleClick(clickEvent: MouseEvent): void {
     const clickedPoint = this.calculateClickedPoint(clickEvent);
     this.anchorPoints.push(clickedPoint);
     this.drawPoints();
@@ -127,11 +127,13 @@ export class SvgchartComponent {
         });
       }
 
-      pointDimensonIndex !== pointDimensons.length - 1 &&
+      if (pointDimensonIndex !== pointDimensons.length - 1) {
         result.push({
           start: pointDimenson,
           end: pointDimensons[pointDimensonIndex + 1],
         });
+      }
+
     });
 
     return result;
@@ -142,16 +144,16 @@ export class SvgchartComponent {
   }
 
   mousedown(downevent: MouseEvent): void {
+    // Only allow mouse left button event
     if (downevent.button === MouseButton.Left) {
       this.isMoving = true;
-      // Left mouse button
     }
   }
 
   mouseup(upevent: MouseEvent): void {
+    // Only allow mouse left button event
     if (upevent.button === MouseButton.Left) {
       this.isMoving = false;
-      // Left mouse button
     }
   }
 
@@ -211,7 +213,7 @@ export class SvgchartComponent {
     // Return a unique identifier for the labelData item
     return labelData.label;
   }
-  
+
   trackByGridLineId(index: number, gridLine: GridLine): string {
     // Return a unique identifier for the gridLine item
     return `${gridLine.x1}-${gridLine.y1}-${gridLine.x2}-${gridLine.y2}`;
